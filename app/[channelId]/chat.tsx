@@ -88,7 +88,7 @@ export default function Chat({chatChannelId, accessToken}) {
         }
 
         window.scrollTo(0, document.body.scrollHeight)
-    }, [sid, lastJsonMessage])
+    }, [lastJsonMessage])
 
     useEffect(() => {
         if (readyState == ReadyState.OPEN) {
