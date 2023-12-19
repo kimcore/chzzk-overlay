@@ -14,6 +14,9 @@ dependencies:
   react-dom:
     specifier: ^18
     version: 18.2.0(react@18.2.0)
+  react-use-websocket:
+    specifier: ^4.5.0
+    version: 4.5.0(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
   '@types/node':
@@ -726,6 +729,16 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-use-websocket@4.5.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-oxYVLWM3Lv0InCfjW7hG/Hk0hkE0P1SiLd5/I3d5x0W4riAnDUkD4VEu7qNVAqxNjBF3nU7k0jLMOetLXpwfsA==}
+    peerDependencies:
+      react: '>= 18.0.0'
+      react-dom: '>= 18.0.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react@18.2.0:
