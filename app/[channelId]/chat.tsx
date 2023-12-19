@@ -28,7 +28,7 @@ export default function Chat({chatChannelId, accessToken}) {
         ver: "2"
     }
 
-    useEffect(async () => {
+    useEffect(() => {
         if (lastJsonMessage) {
             const json = lastJsonMessage as any
 
