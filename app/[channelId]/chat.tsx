@@ -27,8 +27,6 @@ export default function Chat({chatChannelId, accessToken}) {
         svcid: "game",
         ver: "2"
     }
-    
-    async function nicknameToNumber(nickname
 
     useEffect(async () => {
         if (lastJsonMessage) {
