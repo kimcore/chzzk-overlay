@@ -54,7 +54,6 @@ export default function Chat({chatChannelId, accessToken}) {
                     const list = (json.cmd == 93101 ? json['bdy'] : json['bdy']['messageList'])
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .map(chat => {
-                            const color = currentSeq % 6
                             const profile = JSON.parse(chat['profile'])
                             const nickname = profile.nickname
                             const color = nickname.split("")
@@ -63,13 +62,14 @@ export default function Chat({chatChannelId, accessToken}) {
                             const badges = profile['activityBadges']?.map(badge => badge['imageUrl']) || []
                             const extras = JSON.parse(chat['extras'])
                             const emojis = extras.emojis || {}
-
+                            const message = chat['msg'] || chat['content']
+                            
                             return {
                                 badges,
                                 color,
-                                message: chat['msg'] || chat['content'],
+                                nickname,
                                 emojis,
-                                nickname: profile.nickname
+                                message
                             }
                         })
 
