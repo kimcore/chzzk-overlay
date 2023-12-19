@@ -16,10 +16,8 @@ const colors = [
 const emojiRegex = /{:([a-zA-Z0-9_]+):}/g
 
 export default function Chat({chatChannelId, accessToken}) {
-    const [sid, setSid] = useState(null)
     const {sendMessage, lastJsonMessage, readyState} = useWebSocket("wss://kr-ss1.chat.naver.com/chat")
     const [chats, setChats] = useState([])
-    const [seq, setSeq] = useState(0)
 
     const searchParams = useSearchParams()
     const small = searchParams.has("small")
@@ -29,8 +27,10 @@ export default function Chat({chatChannelId, accessToken}) {
         svcid: "game",
         ver: "2"
     }
+    
+    async function nicknameToNumber(nickname
 
-    useEffect(() => {
+    useEffect(async () => {
         if (lastJsonMessage) {
             const json = lastJsonMessage as any
 
@@ -43,7 +43,6 @@ export default function Chat({chatChannelId, accessToken}) {
                     break
                 case 10100:
                     const sid = json['bdy']['sid']
-                    setSid(sid)
                     sendMessage(JSON.stringify({
                         bdy: {recentMessageCount: 50},
                         cmd: 5101,
@@ -54,17 +53,16 @@ export default function Chat({chatChannelId, accessToken}) {
                     break
                 case 93101:
                 case 15101:
-                    let currentSeq = seq
-
                     const list = (json.cmd == 93101 ? json['bdy'] : json['bdy']['messageList'])
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .map(chat => {
                             const color = currentSeq % 6
-                            currentSeq++
-
                             const profile = JSON.parse(chat['profile'])
+                            const nickname = profile.nickname
+                            const color = nickname.split("")
+                                .map(c => c.charCodeAt(0))
+                                .reduce((a, b) => a + b, 0) % colors.length
                             const badges = profile['activityBadges']?.map(badge => badge['imageUrl']) || []
-
                             const extras = JSON.parse(chat['extras'])
                             const emojis = extras.emojis || {}
 
@@ -76,8 +74,6 @@ export default function Chat({chatChannelId, accessToken}) {
                                 nickname: profile.nickname
                             }
                         })
-
-                    setSeq(currentSeq)
 
                     setChats((prevState) => {
                         const newChats = prevState.concat(list)
