@@ -14,7 +14,7 @@ export default function Home() {
                 오버레이 주소: https://chzzk-overlay.vercel.app/6e06f5e1907f17eff543abd06cb62891
             </p>
             <p>
-                추가로, 오버레이 뒤에 <code>?small</code> 을 붙이면 채팅 간격이 넓어집니다.
+                추가로, 오버레이 주소 뒤에 <code>?small</code> 을 붙이면 채팅 간격이 넓어집니다.
             </p>
         </main>
     )
