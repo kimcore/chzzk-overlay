@@ -1,4 +1,4 @@
-import Chat from "@/app/[channelId]/chat"
+import ChatBox from "./chat"
 
 export const dynamic = "force-dynamic"
 
@@ -16,6 +16,6 @@ export default async function ChatPage({params: {channelId}}) {
     ).then(r => r.json()).then(data => data['content']['accessToken'])
 
     return (
-        <Chat chatChannelId={chatChannelId} accessToken={accessToken}/>
+        <ChatBox chatChannelId={chatChannelId} accessToken={accessToken}/>
     )
 }

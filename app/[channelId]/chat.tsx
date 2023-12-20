@@ -1,3 +1,5 @@
+// noinspection JSIgnoredPromiseFromCall
+
 "use client"
 
 import {Fragment, useEffect, useState} from "react"
@@ -16,7 +18,47 @@ const colors = [
 
 const emojiRegex = /{:([a-zA-Z0-9_]+):}/g
 
-export default function Chat({chatChannelId, accessToken}) {
+function Chat({badges, color, nickname, emojis, message}) {
+    const match = message.match(emojiRegex)
+
+    return (
+        <div data-from={nickname}>
+            <span className="meta" style={{
+                color: typeof color == "number" ? colors[color] : color
+            }}>
+                {badges.map((badge: { name: string, src: string }) => (
+                    <img alt={badge.name} key={badge.name} className="badge" src={badge.src}/>
+                ))}
+                <span className="name">
+                    {nickname}
+                </span>
+                <span className="colon">
+                    :
+                </span>
+            </span>
+            <span className="message">
+                {match ? (
+                    <Fragment>
+                        {message.split(emojiRegex).map((part: string, i: number) => {
+                            if (i % 2 == 0) {
+                                return part
+                            } else {
+                                const src = emojis[part]
+                                return (
+                                    <span key={i} className="emote_wrap">
+                                        <img alt={`{:${part}:}`} className="emoticon" src={src}/>
+                                    </span>
+                                )
+                            }
+                        })}
+                    </Fragment>
+                ) : message}
+            </span>
+        </div>
+    )
+}
+
+export default function ChatBox({chatChannelId, accessToken}) {
     const [chats, setChats] = useState([])
 
     const searchParams = useSearchParams()
@@ -63,6 +105,11 @@ export default function Chat({chatChannelId, accessToken}) {
         const chzzkChat = ChzzkChat.fromAccessToken(chatChannelId, accessToken)
         chzzkChat.on("chat", onChat.bind(this))
         chzzkChat.on("connect", () => chzzkChat.requestRecentChat(50))
+        chzzkChat.on("disconnect", () => {
+            setChats([])
+            chzzkChat.connect()
+        })
+
         chzzkChat.connect()
     }, [])
 
@@ -72,47 +119,7 @@ export default function Chat({chatChannelId, accessToken}) {
 
     return (
         <div id="log" className={clsx(small && "small")}>
-            {chats.map(chat => {
-                const match = chat.message.match(emojiRegex)
-
-                return (
-                    <div key={chat.id} data-from={chat.nickname}>
-                        <span className="meta" style={{
-                            color: typeof chat.color == "number" ? colors[chat.color] : chat.color
-                        }}>
-                            {chat.badges.map((badge: { name: string, src: string }) => (
-                                <img alt={badge.name} key={badge.name} className="badge" src={badge.src}/>
-                            ))}
-                            <span className="name">
-                                {chat.nickname}
-                            </span>
-                            <span className="colon">
-                                :
-                            </span>
-                        </span>
-                        <span className="message">
-                                {match ? (
-                                    <Fragment>
-                                        {chat.message.split(emojiRegex).map((part: string, i: number) => {
-                                            if (i % 2 == 0) {
-                                                return part
-                                            } else {
-                                                const src = chat.emojis[part]
-                                                return (
-                                                    <span key={i} className="emote_wrap">
-                                                        <img alt={`{:${part}:}`} className="emoticon" src={src}/>
-                                                    </span>
-                                                )
-                                            }
-                                        })}
-                                    </Fragment>
-                                ) : (
-                                    chat.message
-                                )}
-                            </span>
-                    </div>
-                )
-            })}
+            {chats.map(chat => <Chat id={chat.id} {...chat}/>)}
         </div>
     )
 }
