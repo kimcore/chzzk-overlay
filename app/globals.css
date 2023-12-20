@@ -1,15 +1,233 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-.text-stroke {
-    text-shadow: rgb(0, 0, 0) 2px 0px 0px, rgb(0, 0, 0) 1.75517px 0.958851px 0px, rgb(0, 0, 0) 1.0806px 1.68294px 0px, rgb(0, 0, 0) 0.141474px 1.99499px 0px, rgb(0, 0, 0) -0.832294px 1.81859px 0px, rgb(0, 0, 0) -1.60229px 1.19694px 0px, rgb(0, 0, 0) -1.97998px 0.28224px 0px, rgb(0, 0, 0) -1.87291px -0.701566px 0px, rgb(0, 0, 0) -1.30729px -1.5136px 0px, rgb(0, 0, 0) -0.421592px -1.95506px 0px, rgb(0, 0, 0) 0.567324px -1.91785px 0px, rgb(0, 0, 0) 1.41734px -1.41108px 0px, rgb(0, 0, 0) 1.92034px -0.558831px 0px;
+:root {
+    --font-size: 20px;
 }
 
-.top-shadow {
+#log > div.deleted {
+    visibility: hidden;
+}
+
+#log .emote_wrap {
+    position: relative;
+    padding: 1px
+}
+
+#log .emote_wrap img.emoticon {
+    height: calc(var(--font-size) * 1.5);
+    vertical-align: middle;
+    margin: -5px 0px 0px;
+}
+
+.badge {
+    margin: -5px 0px -2px;
+}
+
+.colon,
+.name {
+}
+
+#log .meta {
+    padding-right: 6px;
+    position: relative;
+}
+
+.badge {
+    margin-right: 4px;
+    height: 1em
+}
+
+.name {
+    font-weight: 700;
+    margin-left: .0em
+}
+
+.colon,
+.name {
+    height: 24px
+}
+
+body,
+html {
+    height: 100%;
+    overflow: hidden
+}
+
+#log {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 10px 10px;
     width: 100%;
-    position: fixed;
-    height: 50px;
-    top: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
+    box-sizing: border-box;
+    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.7),
+    -1px 1px 0 rgba(0, 0, 0, 0.7),
+    1px -1px 0 rgba(0, 0, 0, 0.7),
+    1px 1px 0 rgba(0, 0, 0, 0.7),
+    0 0 1px rgba(0, 0, 0, 0.7),
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000,
+    0px 0px 3px #000;
+}
+
+body {
+    -webkit-mask-image: -webkit-gradient(linear, left 5%, left top, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+}
+
+#log > div {
+    padding-bottom: .25em;
+    word-wrap: break-word;
+}
+
+#log.small > div {
+    line-height: 1.5em;
+}
+
+body {
+    background: transparent;
+    color: white;
+    font-size: var(--font-size);
+}
+
+#log > div {
+    font-weight: 600;
+}
+
+span.message > img {
+    height: 1em;
+}
+
+span.message > img.emote {
+    height: auto !important;
+    vertical-align: text-top;
 }

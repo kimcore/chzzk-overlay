@@ -3,6 +3,7 @@
 import useWebSocket, {ReadyState} from "react-use-websocket"
 import {Fragment, useEffect, useState} from "react"
 import {useSearchParams} from "next/navigation"
+import {clsx} from "clsx"
 
 const colors = [
     "rgb(219, 74, 63)",
@@ -63,7 +64,7 @@ export default function Chat({chatChannelId, accessToken}) {
                             const extras = JSON.parse(chat['extras'])
                             const emojis = extras.emojis || {}
                             const message = chat['msg'] || chat['content']
-                            
+
                             return {
                                 badges,
                                 color,
@@ -87,7 +88,7 @@ export default function Chat({chatChannelId, accessToken}) {
             }
         }
     }, [lastJsonMessage])
-    
+
     useEffect(() => {
         window.scrollTo(0, document.body.scrollHeight)
     }, [chats])
@@ -109,22 +110,26 @@ export default function Chat({chatChannelId, accessToken}) {
     }, [readyState])
 
     return (
-        <div className="rounded-lg overflow-hidden">
-            <div className={`flex flex-col gap-1 p-2 ${small ? "text-xl" : "pb-4"}`}>
-                {chats.map(chat => {
-                    const match = chat.message.match(emojiRegex)
+        <div id="log" className={clsx(small && "small")}>
+            {chats.map(chat => {
+                const match = chat.message.match(emojiRegex)
 
-                    return (
-                        <div className="text-stroke">
+                return (
+                    <div data-from={chat.nickname}>
+                        <span className="meta" style={{
+                            color: colors[chat.color]
+                        }}>
                             {chat.badges.map(badge => (
-                                <img alt="" className="inline-block w-6 h-6 mr-1" src={badge}/>
+                                <img className="badge" src={badge}/>
                             ))}
-                            <span style={{
-                                color: colors[chat.color]
-                            }} className="mr-1">
-                                {chat.nickname}:
+                            <span className="name">
+                                {chat.nickname}
                             </span>
-                            <span className="text-white">
+                            <span className="colon">
+                                :
+                            </span>
+                        </span>
+                        <span className="message">
                                 {match ? (
                                     <Fragment>
                                         {chat.message.split(emojiRegex).map((part, i) => {
@@ -132,7 +137,11 @@ export default function Chat({chatChannelId, accessToken}) {
                                                 return part
                                             } else {
                                                 const src = chat.emojis[part]
-                                                return <img alt="" className="inline-block w-7 h-7 mr-1" src={src}/>
+                                                return (
+                                                    <span className="emote_wrap">
+                                                        <img className="emoticon" src={src}/>
+                                                    </span>
+                                                )
                                             }
                                         })}
                                     </Fragment>
@@ -140,11 +149,9 @@ export default function Chat({chatChannelId, accessToken}) {
                                     chat.message
                                 )}
                             </span>
-                        </div>
-                    )
-                })}
-            </div>
-            {!small && <div className="top-shadow"/>}
+                    </div>
+                )
+            })}
         </div>
     )
 }
