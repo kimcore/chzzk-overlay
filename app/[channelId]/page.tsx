@@ -1,5 +1,7 @@
 import Chat from "@/app/[channelId]/chat"
 
+export const dynamic = "force-dynamic"
+
 export default async function ChatPage({params: {channelId}}) {
     const {signal} = new AbortController()
 
