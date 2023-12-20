@@ -23,15 +23,22 @@ export default function Chat({chatChannelId, accessToken}) {
     const small = searchParams.has("small")
 
     function onChat(chat: ChatEvent) {
+        if (chat.hidden) return
+
         const id = `${chat.profile.userIdHash}-${chat.time}`
         const nickname = chat.profile.nickname
-        const color = nickname.split("")
+        const badge = chat.profile.badge ? {
+            name: chat.profile.title.name, src: chat.profile.badge.imageUrl
+        } : null
+        const badges = (badge ? [badge] : []).concat(
+            chat.profile.activityBadges
+                .filter(badge => badge.activated)
+                .map(badge => ({name: badge.title, src: badge.imageUrl}))
+        )
+        const color = chat.profile.title?.color ?? nickname.split("")
             .map(c => c.charCodeAt(0))
             .reduce((a, b) => a + b, 0) % colors.length
-        const badges = chat.profile.activityBadges
-            ?.filter(badge => badge.activated)
-            ?.map(badge => ({name: badge.title, src: badge.imageUrl})) || []
-        const emojis = chat.extras.emojis || {}
+        const emojis = chat.extras?.emojis || {}
         const message = chat.message
 
         setChats((prevState) => {
@@ -71,7 +78,7 @@ export default function Chat({chatChannelId, accessToken}) {
                 return (
                     <div key={chat.id} data-from={chat.nickname}>
                         <span className="meta" style={{
-                            color: colors[chat.color]
+                            color: typeof chat.color == "number" ? colors[chat.color] : chat.color
                         }}>
                             {chat.badges.map((badge: { name: string, src: string }) => (
                                 <img alt={badge.name} key={badge.name} className="badge" src={badge.src}/>

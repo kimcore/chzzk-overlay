@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   chzzk:
-    specifier: ^1.0.4
-    version: 1.0.4
+    specifier: ^1.0.5
+    version: 1.0.5
   clsx:
     specifier: ^2.0.0
     version: 2.0.0
@@ -167,8 +167,8 @@ packages:
     resolution: {integrity: sha512-+3e0ASu4sw1SWaoCtvPeyXp+5PsjigkSt8OXZbF9StH5pQWbxEjLAZE3n8Aup5udop1uRiKA7a4utUk/uoSpUw==}
     dev: false
 
-  /chzzk@1.0.4:
-    resolution: {integrity: sha512-nVp6m84lzMEFktvtB6lZMJkWC844BBs8RFuWZ1UKb/nP6/NSKPThd1/LD+QxhhquZPn7l03NDa9N/bn53RqlzQ==}
+  /chzzk@1.0.5:
+    resolution: {integrity: sha512-cgm8rBnmREMo4xagwEHjsUHW0MYiQgkR/IdCzqKo1ZafYV/hqdsdtzz6ElLMX6FJeC8Sx5EHRIb9Phuf5GCrjA==}
     dependencies:
       isomorphic-ws: 5.0.0(ws@8.15.1)
       ws: 8.15.1
