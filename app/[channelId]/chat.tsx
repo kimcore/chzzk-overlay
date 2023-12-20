@@ -119,7 +119,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
 
     return (
         <div id="log" className={clsx(small && "small")}>
-            {chats.map(chat => <Chat id={chat.id} {...chat}/>)}
+            {chats.map(chat => <Chat key={chat.id} {...chat}/>)}
         </div>
     )
 }
