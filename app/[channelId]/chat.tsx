@@ -196,6 +196,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
     }
 
     useEffect(() => {
+        window.addEventListener("obsStreamingStarted", window.location.reload)
         connectChzzk()
     }, [])
 
