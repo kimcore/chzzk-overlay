@@ -196,7 +196,10 @@ export default function ChatBox({chatChannelId, accessToken}) {
     }
 
     useEffect(() => {
-        window.addEventListener("obsStreamingStarted", window.location.reload)
+        // requires obs 30.0.1+
+        window.addEventListener("obsStreamingStarted", () => {
+            window.location.reload()
+        })
         connectChzzk()
     }, [])
 
