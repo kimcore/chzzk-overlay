@@ -150,12 +150,13 @@ export default function ChatBox({chatChannelId, accessToken}) {
                 const chats = (isRecent ? json['bdy']['messageList'] : json['bdy'])
                     .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
 
-                for (const chat of chats) {
+                for (let i = 0; i < chats.length; i++) {
+                    const chat = chats[i]
                     const profile = JSON.parse(chat['profile'])
                     const extras = JSON.parse(chat['extras'])
 
                     if (!isRecent) {
-                        await sleep(5)
+                        await sleep(i * 75)
                     }
 
                     onChat({
