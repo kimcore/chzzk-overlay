@@ -15,7 +15,34 @@ export default function ChatBox({chatChannelId, accessToken}) {
     const pendingChatListRef = useRef<Chat[]>([])
     const [chatList, setChatList] = useState<Chat[]>([])
 
-    function connectChzzk() {
+    const convertChat = useCallback((raw): Chat => {
+        const profile = JSON.parse(raw['profile'])
+        const extras = JSON.parse(raw['extras'])
+        const nickname = profile.nickname
+        const badge = profile.badge ? {
+            name: profile.title.name, src: profile.badge.imageUrl
+        } : null
+        const badges = (badge ? [badge] : []).concat(
+            profile.activityBadges
+                ?.filter(badge => badge.activated)
+                ?.map(badge => ({name: badge.title, src: badge.imageUrl})) ?? []
+        )
+        const color = profile.title?.color ?? (profile.userIdHash + chatChannelId).split("")
+            .map(c => c.charCodeAt(0))
+            .reduce((a, b) => a + b, 0) % nicknameColors.length
+        const emojis = extras?.emojis || {}
+        const message = raw['msg'] || raw['content']
+        return {
+            uuid: crypto.randomUUID(),
+            nickname,
+            badges,
+            color,
+            emojis,
+            message
+        }
+    }, [chatChannelId])
+
+    const connectChzzk = useCallback(() => {
         const ws = new WebSocket("wss://kr-ss1.chat.naver.com/chat")
 
         const defaults = {
@@ -73,32 +100,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .filter(chat => !((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN"))
                         .sort((a, b) => a.msgTime - b.msgTime)
-                        .map(chat => {
-                            const profile = JSON.parse(chat['profile'])
-                            const extras = JSON.parse(chat['extras'])
-                            const nickname = profile.nickname
-                            const badge = profile.badge ? {
-                                name: profile.title.name, src: profile.badge.imageUrl
-                            } : null
-                            const badges = (badge ? [badge] : []).concat(
-                                profile.activityBadges
-                                    ?.filter(badge => badge.activated)
-                                    ?.map(badge => ({name: badge.title, src: badge.imageUrl})) ?? []
-                            )
-                            const color = profile.title?.color ?? (profile.userIdHash + chatChannelId).split("")
-                                .map(c => c.charCodeAt(0))
-                                .reduce((a, b) => a + b, 0) % nicknameColors.length
-                            const emojis = extras?.emojis || {}
-                            const message = chat['msg'] || chat['content']
-                            return {
-                                uuid: crypto.randomUUID(),
-                                nickname,
-                                badges,
-                                color,
-                                emojis,
-                                message
-                            }
-                        })
+                        .map(convertChat)
 
                     pendingChatListRef.current = [...pendingChatListRef.current, ...chats].slice(-50)
                     break
@@ -111,15 +113,11 @@ export default function ChatBox({chatChannelId, accessToken}) {
             isClosingWebSocket.current = true
             ws.close()
         }
-    }
+    }, [accessToken, chatChannelId, convertChat])
 
     useEffect(() => {
-        // requires obs 30.0.1+
-        window.addEventListener("obsStreamingStarted", () => {
-            window.location.reload()
-        })
         return connectChzzk()
-    }, [])
+    }, [connectChzzk])
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -150,6 +148,18 @@ export default function ChatBox({chatChannelId, accessToken}) {
             lastSetTimestampRef.current = 0
         }
     }, [])
+
+    const handleObsStreamingStarted = useCallback(() => {
+        window.location.reload()
+    }, [])
+
+    // requires obs 30.0.1+
+    useEffect(() => {
+        window.addEventListener("obsStreamingStarted", handleObsStreamingStarted)
+        return () => {
+            window.removeEventListener("obsStreamingStarted", handleObsStreamingStarted)
+        }
+    }, [handleObsStreamingStarted])
 
     return (
         <div id="log" className={clsx(small && "small")}>
