@@ -29,8 +29,6 @@ export default function ChatBox({chatChannelId, accessToken}) {
     }, [])
 
     function onChat(chat) {
-        if ((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN") return
-
         const nickname = chat.profile.nickname
         const badge = chat.profile.badge ? {
             name: chat.profile.title.name, src: chat.profile.badge.imageUrl
@@ -112,6 +110,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
                     const isRecent = json.cmd == ChatCmd.RECENT_CHAT
                     const chats = (isRecent ? json['bdy']['messageList'] : json['bdy'])
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
+                        .filter(chat => !((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN"))
 
                     for (let i = 0; i < chats.length; i++) {
                         const chat = chats[i]
