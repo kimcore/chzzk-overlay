@@ -1,4 +1,4 @@
-import ChatBox from "./chat"
+import ChatBox from "./ChatBox"
 import {notFound} from "next/navigation"
 
 export const dynamic = "force-dynamic"
