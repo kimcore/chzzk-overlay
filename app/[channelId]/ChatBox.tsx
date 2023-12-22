@@ -31,7 +31,6 @@ export default function ChatBox({chatChannelId, accessToken}) {
             }
             return newChatList
         })
-        window.scrollTo(0, document.body.scrollHeight)
     }, [])
 
     function onChat(chat) {
