@@ -11,6 +11,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
     const small = searchParams.has("small")
 
     const isClosingWebSocket = useRef<boolean>(false)
+    const lastSetTimestampRef = useRef<number>(0)
     const pendingChatListRef = useRef<Chat[]>([])
     const [chatList, setChatList] = useState<Chat[]>([])
 
@@ -123,17 +124,31 @@ export default function ChatBox({chatChannelId, accessToken}) {
     useEffect(() => {
         const interval = setInterval(() => {
             if (pendingChatListRef.current.length > 0) {
-                const chat = pendingChatListRef.current.shift()
-                setChatList((prevChatList) => {
-                    const newChatList = [...prevChatList, chat]
-                    if (newChatList.length > 50) {
-                        newChatList.shift()
-                    }
-                    return newChatList
-                })
+                if (new Date().getTime() - lastSetTimestampRef.current > 1000) {
+                    setChatList((prevChatList) => {
+                        return [
+                            ...prevChatList.slice(pendingChatListRef.current.length - 50),
+                            ...pendingChatListRef.current,
+                        ]
+                    })
+                    pendingChatListRef.current = []
+                } else {
+                    const chat = pendingChatListRef.current.shift()
+                    setChatList((prevChatList) => {
+                        const newChatList = [...prevChatList, chat]
+                        if (newChatList.length > 50) {
+                            newChatList.shift()
+                        }
+                        return newChatList
+                    })
+                }
             }
+            lastSetTimestampRef.current = new Date().getTime()
         }, 75)
-        return () => clearInterval(interval)
+        return () => {
+            clearInterval(interval)
+            lastSetTimestampRef.current = 0
+        }
     }, [])
 
     return (
