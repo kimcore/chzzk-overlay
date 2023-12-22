@@ -17,12 +17,6 @@ export default function ChatBox({chatChannelId, accessToken}) {
 
     const [chatList, setChatList] = useState<Chat[]>([])
 
-    const defaults = {
-        cid: chatChannelId,
-        svcid: "game",
-        ver: "2"
-    }
-
     const appendChat = useCallback((chat: Chat) => {
         setChatList((prevChatList) => {
             const newChatList = [...prevChatList, chat]
@@ -61,54 +55,14 @@ export default function ChatBox({chatChannelId, accessToken}) {
         })
     }
 
-    async function onMessage(event: MessageEvent) {
-        const json = JSON.parse(event.data)
-
-        switch (json.cmd) {
-            case ChatCmd.PING:
-                this.send(JSON.stringify({
-                    cmd: ChatCmd.PONG,
-                    tid: json.tid
-                }))
-                break
-            case ChatCmd.CONNECTED:
-                const sid = json.bdy.sid
-                this.send(JSON.stringify({
-                    bdy: {recentMessageCount: 50},
-                    cmd: ChatCmd.REQUEST_RECENT_CHAT,
-                    sid,
-                    tid: 2,
-                    ...defaults
-                }))
-                break
-            case ChatCmd.RECENT_CHAT:
-            case ChatCmd.CHAT:
-                const isRecent = json.cmd == ChatCmd.RECENT_CHAT
-                const chats = (isRecent ? json['bdy']['messageList'] : json['bdy'])
-                    .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
-
-                for (let i = 0; i < chats.length; i++) {
-                    const chat = chats[i]
-                    const profile = JSON.parse(chat['profile'])
-                    const extras = JSON.parse(chat['extras'])
-
-                    if (!isRecent) {
-                        await sleep(i * 75)
-                    }
-
-                    onChat({
-                        profile,
-                        extras,
-                        message: chat['msg'] || chat['content'],
-                    })
-                }
-
-                break
-        }
-    }
-
     function connectChzzk() {
         const ws = new WebSocket("wss://kr-ss1.chat.naver.com/chat")
+
+        const defaults = {
+            cid: chatChannelId,
+            svcid: "game",
+            ver: "2"
+        }
 
         ws.onopen = () => {
             ws.send(JSON.stringify({
@@ -130,7 +84,51 @@ export default function ChatBox({chatChannelId, accessToken}) {
             }, 1000)
         }
 
-        ws.onmessage = onMessage
+        ws.onmessage = async (event: MessageEvent) => {
+            const json = JSON.parse(event.data)
+
+            switch (json.cmd) {
+                case ChatCmd.PING:
+                    ws.send(JSON.stringify({
+                        cmd: ChatCmd.PONG,
+                        tid: json.tid
+                    }))
+                    break
+                case ChatCmd.CONNECTED:
+                    const sid = json.bdy.sid
+                    ws.send(JSON.stringify({
+                        bdy: {recentMessageCount: 50},
+                        cmd: ChatCmd.REQUEST_RECENT_CHAT,
+                        sid,
+                        tid: 2,
+                        ...defaults
+                    }))
+                    break
+                case ChatCmd.RECENT_CHAT:
+                case ChatCmd.CHAT:
+                    const isRecent = json.cmd == ChatCmd.RECENT_CHAT
+                    const chats = (isRecent ? json['bdy']['messageList'] : json['bdy'])
+                        .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
+
+                    for (let i = 0; i < chats.length; i++) {
+                        const chat = chats[i]
+                        const profile = JSON.parse(chat['profile'])
+                        const extras = JSON.parse(chat['extras'])
+
+                        if (!isRecent) {
+                            await sleep(i * 75)
+                        }
+
+                        onChat({
+                            profile,
+                            extras,
+                            message: chat['msg'] || chat['content'],
+                        })
+                    }
+
+                    break
+            }
+        }
     }
 
     useEffect(() => {
