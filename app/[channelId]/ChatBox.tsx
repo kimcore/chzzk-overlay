@@ -111,6 +111,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
                     const chats = (isRecent ? json['bdy']['messageList'] : json['bdy'])
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .filter(chat => !((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN"))
+                        .sort((a, b) => a.msgTime - b.msgTime)
 
                     for (let i = 0; i < chats.length; i++) {
                         const chat = chats[i]
