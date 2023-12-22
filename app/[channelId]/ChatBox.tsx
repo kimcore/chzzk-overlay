@@ -1,6 +1,6 @@
 "use client"
 
-import {useCallback, useEffect, useState} from "react"
+import {useCallback, useEffect, useRef, useState} from "react"
 import {useSearchParams} from "next/navigation"
 import {clsx} from "clsx"
 import {ChatCmd} from "chzzk"
@@ -15,6 +15,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
     const searchParams = useSearchParams()
     const small = searchParams.has("small")
 
+    const isClosingWebSocket = useRef<boolean>(false)
     const [chatList, setChatList] = useState<Chat[]>([])
 
     const appendChat = useCallback((chat: Chat) => {
@@ -79,9 +80,11 @@ export default function ChatBox({chatChannelId, accessToken}) {
         }
 
         ws.onclose = () => {
-            setTimeout(() => {
-                connectChzzk()
-            }, 1000)
+            if (!isClosingWebSocket) {
+                setTimeout(() => {
+                    connectChzzk()
+                }, 1000)
+            }
         }
 
         ws.onmessage = async (event: MessageEvent) => {
@@ -129,6 +132,13 @@ export default function ChatBox({chatChannelId, accessToken}) {
                     break
             }
         }
+
+        isClosingWebSocket.current = false
+
+        return () => {
+            isClosingWebSocket.current = true
+            ws.close()
+        }
     }
 
     useEffect(() => {
@@ -136,7 +146,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
         window.addEventListener("obsStreamingStarted", () => {
             window.location.reload()
         })
-        connectChzzk()
+        return connectChzzk()
     }, [])
 
     return (
