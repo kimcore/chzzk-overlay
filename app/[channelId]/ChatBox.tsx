@@ -5,6 +5,7 @@ import {useSearchParams} from "next/navigation"
 import {clsx} from "clsx"
 import {ChatCmd} from "chzzk"
 import ChatRow, {Chat, nicknameColors} from "./ChatRow"
+import useNotice from "@/src/hooks/use-notice"
 
 export default function ChatBox({chatChannelId, accessToken}) {
     const searchParams = useSearchParams()
@@ -187,6 +188,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
             }
             lastSetTimestampRef.current = new Date().getTime()
         }, 75)
+
         return () => {
             clearInterval(interval)
             lastSetTimestampRef.current = 0
@@ -200,10 +202,13 @@ export default function ChatBox({chatChannelId, accessToken}) {
     // requires obs 30.0.1+
     useEffect(() => {
         window.addEventListener("obsStreamingStarted", handleObsStreamingStarted)
+
         return () => {
             window.removeEventListener("obsStreamingStarted", handleObsStreamingStarted)
         }
     }, [handleObsStreamingStarted])
+
+    useNotice()
 
     return (
         <div id="log" className={clsx(small && "small")}>
