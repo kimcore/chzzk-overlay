@@ -134,7 +134,12 @@ export default function ChatBox({chatChannelId, accessToken}) {
                         .sort((a, b) => a.msgTime - b.msgTime)
                         .map(convertChat)
 
-                    pendingChatListRef.current = [...pendingChatListRef.current, ...chats].slice(-50)
+                    if (isRecent) {
+                        pendingChatListRef.current = []
+                        setChatList(chats)
+                    } else {
+                        pendingChatListRef.current = [...pendingChatListRef.current, ...chats].slice(-50)
+                    }
                     break
             }
 
