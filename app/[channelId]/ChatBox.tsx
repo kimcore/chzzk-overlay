@@ -111,8 +111,8 @@ export default function ChatBox({chatChannelId, accessToken}) {
             switch (json.cmd) {
                 case ChatCmd.PING:
                     ws.send(JSON.stringify({
+                        ver: "2",
                         cmd: ChatCmd.PONG,
-                        tid: json.tid
                     }))
                     break
                 case ChatCmd.CONNECTED:
