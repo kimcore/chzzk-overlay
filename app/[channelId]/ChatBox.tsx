@@ -45,6 +45,38 @@ export default function ChatBox({chatChannelId, accessToken}) {
     const connectChzzk = useCallback(() => {
         const ws = new WebSocket("wss://kr-ss1.chat.naver.com/chat")
 
+        const worker = new Worker(
+            URL.createObjectURL(new Blob([`
+                let timeout = null
+
+                onmessage = (e) => {
+                    if (e.data === "startPingTimer") {
+                        if (timeout != null) {
+                            clearTimeout(timeout)
+                        }
+                        timeout = setTimeout(function reservePing() {
+                            postMessage("ping")
+                            timeout = setTimeout(reservePing, 20000)
+                        }, 20000)
+                    }
+                    if (e.data === "stop") {
+                        if (timeout != null) {
+                            clearTimeout(timeout)
+                        }
+                    }
+                }
+            `], {type: "application/javascript"}))
+        )
+
+        worker.onmessage = (e) => {
+            if (e.data === "ping") {
+                ws.send(JSON.stringify({
+                    ver: "2",
+                    cmd: ChatCmd.PING
+                }))
+            }
+        }
+
         const defaults = {
             cid: chatChannelId,
             svcid: "game",
@@ -105,11 +137,19 @@ export default function ChatBox({chatChannelId, accessToken}) {
                     pendingChatListRef.current = [...pendingChatListRef.current, ...chats].slice(-50)
                     break
             }
+
+            if (json.cmd !== ChatCmd.PONG) {
+                worker.postMessage("startPingTimer")
+            }
         }
+
+        worker.postMessage("startPingTimer")
 
         isClosingWebSocket.current = false
 
         return () => {
+            worker.postMessage("stop")
+            worker.terminate()
             isClosingWebSocket.current = true
             ws.close()
         }
