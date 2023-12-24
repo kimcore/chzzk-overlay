@@ -126,7 +126,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
                 case ChatCmd.RECENT_CHAT:
                 case ChatCmd.CHAT:
                     const isRecent = json.cmd == ChatCmd.RECENT_CHAT
-                    const chats = (isRecent ? json['bdy']['messageList'] : json['bdy'])
+                    const chats: Chat[] = (isRecent ? json['bdy']['messageList'] : json['bdy'])
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .filter(chat => !((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN"))
                         .map(convertChat)
@@ -135,7 +135,9 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
                         pendingChatListRef.current = []
                         setChatList(chats)
                     } else {
-                        pendingChatListRef.current = [...pendingChatListRef.current, ...chats].slice(-50)
+                        pendingChatListRef.current = [...pendingChatListRef.current, ...chats].filter(
+                            ({time}, i) => i < 50 || new Date().getTime() - time < 1000
+                        )
                     }
                     break
             }
@@ -163,10 +165,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
             if (pendingChatListRef.current.length > 0) {
                 if (new Date().getTime() - lastSetTimestampRef.current > 1000) {
                     setChatList((prevChatList) => {
-                        return [
-                            ...prevChatList.slice(pendingChatListRef.current.length - 50),
-                            ...pendingChatListRef.current,
-                        ]
+                        return [...prevChatList, ...pendingChatListRef.current].slice(-50)
                     })
                     pendingChatListRef.current = []
                 } else {
