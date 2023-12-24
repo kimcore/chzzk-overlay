@@ -2,7 +2,7 @@ import {useCallback, useEffect, useRef, useState} from "react"
 import {nicknameColors} from "./constants"
 import {Chat, ChatCmd} from "./types"
 
-export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 150) {
+export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 50) {
     const currentWebSocketBusterRef = useRef<number>(0)
     const lastSetTimestampRef = useRef<number>(0)
     const pendingChatListRef = useRef<Chat[]>([])
@@ -127,7 +127,6 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .filter(chat => !((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN"))
                         .map(convertChat)
-                        .filter(chat => chat.nickname == "깡식")
 
                     if (isRecent) {
                         pendingChatListRef.current = []
