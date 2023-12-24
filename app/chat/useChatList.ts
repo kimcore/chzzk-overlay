@@ -27,7 +27,7 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
             .map(c => c.charCodeAt(0))
             .reduce((a, b) => a + b, 0) % nicknameColors.length
         const emojis = extras?.emojis || {}
-        const message = raw['msg'] || raw['content']
+        const message = raw['msg'] || raw['content'] || ''
         return {
             uid: Math.random().toString(36).substring(2, 12),
             time: raw['msgTime'] || raw['messageTime'],
