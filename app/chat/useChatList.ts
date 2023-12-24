@@ -3,7 +3,7 @@ import {useCallback, useEffect, useRef, useState} from "react"
 import {nicknameColors} from "./constants"
 import {Chat} from "./types"
 
-export default function useChatList(chatChannelId: string, accessToken: string) {
+export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 50) {
     const currentWebSocketBusterRef = useRef<number>(0)
     const lastSetTimestampRef = useRef<number>(0)
     const pendingChatListRef = useRef<Chat[]>([])
@@ -116,7 +116,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
                 case ChatCmd.CONNECTED:
                     const sid = json.bdy.sid
                     ws.send(JSON.stringify({
-                        bdy: {recentMessageCount: 50},
+                        bdy: {recentMessageCount: maxChatLength},
                         cmd: ChatCmd.REQUEST_RECENT_CHAT,
                         sid,
                         tid: 2,
@@ -136,7 +136,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
                         setChatList(chats)
                     } else {
                         pendingChatListRef.current = [...pendingChatListRef.current, ...chats].filter(
-                            ({time}, i) => i < 50 || new Date().getTime() - time < 1000
+                            ({time}, i) => i < maxChatLength || new Date().getTime() - time < 1000
                         )
                     }
                     break
@@ -154,7 +154,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
             worker.terminate()
             ws.close()
         }
-    }, [accessToken, chatChannelId, convertChat, webSocketBuster])
+    }, [accessToken, chatChannelId, convertChat, maxChatLength, webSocketBuster])
 
     useEffect(() => {
         return connectChzzk()
@@ -165,14 +165,14 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
             if (pendingChatListRef.current.length > 0) {
                 if (new Date().getTime() - lastSetTimestampRef.current > 1000) {
                     setChatList((prevChatList) => {
-                        return [...prevChatList, ...pendingChatListRef.current].slice(-50)
+                        return [...prevChatList, ...pendingChatListRef.current].slice(-1 * maxChatLength)
                     })
                     pendingChatListRef.current = []
                 } else {
                     const chat = pendingChatListRef.current.shift()
                     setChatList((prevChatList) => {
                         const newChatList = [...prevChatList, chat]
-                        if (newChatList.length > 50) {
+                        if (newChatList.length > maxChatLength) {
                             newChatList.shift()
                         }
                         return newChatList
@@ -185,7 +185,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
             clearInterval(interval)
             lastSetTimestampRef.current = 0
         }
-    }, [])
+    }, [maxChatLength])
 
     return chatList
 }
