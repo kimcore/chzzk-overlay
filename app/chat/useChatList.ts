@@ -1,7 +1,6 @@
-import {ChatCmd} from "chzzk"
 import {useCallback, useEffect, useRef, useState} from "react"
 import {nicknameColors} from "./constants"
-import {Chat} from "./types"
+import {Chat, ChatCmd} from "./types"
 
 export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 50) {
     const currentWebSocketBusterRef = useRef<number>(0)
@@ -10,7 +9,7 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
     const [chatList, setChatList] = useState<Chat[]>([])
     const [webSocketBuster, setWebSocketBuster] = useState<number>(0)
 
-    const convertChat = useCallback((raw): Chat => {
+    const convertChat = useCallback((raw: any): Chat => {
         const profile = JSON.parse(raw['profile'])
         const extras = JSON.parse(raw['extras'])
         const nickname = profile.nickname
