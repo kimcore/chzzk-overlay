@@ -32,7 +32,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
             .map(c => c.charCodeAt(0))
             .reduce((a, b) => a + b, 0) % nicknameColors.length
         const emojis = extras?.emojis || {}
-        const message = raw['msg'] || raw['content']
+        const message = raw['msg'] || raw['content'] || ''
         return {
             uuid: crypto.randomUUID(),
             nickname,
