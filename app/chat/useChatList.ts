@@ -4,10 +4,11 @@ import {nicknameColors} from "./constants"
 import {Chat} from "./types"
 
 export default function useChatList(chatChannelId: string, accessToken: string) {
-    const isClosingWebSocket = useRef<boolean>(false)
+    const currentWebSocketBusterRef = useRef<number>(0)
     const lastSetTimestampRef = useRef<number>(0)
     const pendingChatListRef = useRef<Chat[]>([])
     const [chatList, setChatList] = useState<Chat[]>([])
+    const [webSocketBuster, setWebSocketBuster] = useState<number>(0)
 
     const convertChat = useCallback((raw): Chat => {
         const profile = JSON.parse(raw['profile'])
@@ -92,9 +93,11 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
         }
 
         ws.onclose = () => {
-            if (!isClosingWebSocket) {
+            if (webSocketBuster !== currentWebSocketBusterRef.current) {
                 setTimeout(() => {
-                    connectChzzk()
+                    const newWebSocketBuster = new Date().getTime()
+                    currentWebSocketBusterRef.current = newWebSocketBuster
+                    setWebSocketBuster(newWebSocketBuster)
                 }, 1000)
             }
         }
@@ -143,19 +146,16 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
 
         worker.postMessage("startPingTimer")
 
-        isClosingWebSocket.current = false
-
         return () => {
             worker.postMessage("stop")
             worker.terminate()
-            isClosingWebSocket.current = true
             ws.close()
         }
-    }, [accessToken, chatChannelId, convertChat])
+    }, [accessToken, chatChannelId, convertChat, webSocketBuster])
 
     useEffect(() => {
         return connectChzzk()
-    }, [connectChzzk])
+    }, [connectChzzk, webSocketBuster])
 
     useEffect(() => {
         const interval = setInterval(() => {
