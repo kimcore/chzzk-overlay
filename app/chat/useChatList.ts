@@ -22,7 +22,8 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
                 ?.filter(badge => badge.activated)
                 ?.map(badge => ({name: badge.title, src: badge.imageUrl})) ?? []
         )
-        const color = profile.title?.color ?? (profile.userIdHash + chatChannelId).split("")
+        const channelId = raw["cid"] || raw["channelId"]
+        const color = profile.title?.color ?? (profile.userIdHash + channelId).split("")
             .map(c => c.charCodeAt(0))
             .reduce((a, b) => a + b, 0) % nicknameColors.length
         const emojis = extras?.emojis || {}
@@ -36,7 +37,7 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
             emojis,
             message
         }
-    }, [chatChannelId])
+    }, [])
 
     const connectChzzk = useCallback(() => {
         const ws = new WebSocket("wss://kr-ss1.chat.naver.com/chat")
