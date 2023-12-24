@@ -28,7 +28,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
         const emojis = extras?.emojis || {}
         const message = raw['msg'] || raw['content']
         return {
-            uuid: crypto.randomUUID(),
+            uid: Math.random().toString(36).substring(2, 12),
             nickname,
             badges,
             color,

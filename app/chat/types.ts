@@ -4,7 +4,7 @@ export interface Badge {
 }
 
 export interface Chat {
-    uuid: string;
+    uid: string;
     nickname: string;
     badges: Badge[];
     color: number | string;

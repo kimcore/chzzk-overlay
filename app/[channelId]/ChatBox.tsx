@@ -31,7 +31,7 @@ export default function ChatBox({chatChannelId, accessToken}) {
     return (
         <div id="log" className={clsx(small && "small")}>
             {chatList.map((chat) => (
-                <ChatRow key={chat.uuid} {...chat} />
+                <ChatRow key={chat.uid} {...chat} />
             ))}
         </div>
     )
