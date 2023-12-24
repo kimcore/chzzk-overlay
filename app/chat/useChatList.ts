@@ -2,7 +2,7 @@ import {useCallback, useEffect, useRef, useState} from "react"
 import {nicknameColors} from "./constants"
 import {Chat, ChatCmd} from "./types"
 
-export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 50) {
+export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 150) {
     const currentWebSocketBusterRef = useRef<number>(0)
     const lastSetTimestampRef = useRef<number>(0)
     const pendingChatListRef = useRef<Chat[]>([])
@@ -13,14 +13,11 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
         const profile = JSON.parse(raw['profile'])
         const extras = JSON.parse(raw['extras'])
         const nickname = profile.nickname
-        const badge = profile.badge ? {
-            name: profile.title.name, src: profile.badge.imageUrl
-        } : null
-        const badges = (badge ? [badge] : []).concat(
-            profile.activityBadges
-                ?.filter(badge => badge.activated)
-                ?.map(badge => ({name: badge.title, src: badge.imageUrl})) ?? []
-        )
+        const badge = profile.badge?.imageUrl
+        const donationBadge = profile.streamingProperty?.realTimeDonationRanking?.badge?.imageUrl
+        const badges = [badge, donationBadge].concat(
+            profile.activityBadges?.filter(badge => badge.activated)?.map(badge => badge.imageUrl) ?? []
+        ).filter(badge => badge != null)
         const channelId = raw["cid"] || raw["channelId"]
         const color = profile.title?.color ?? (profile.userIdHash + channelId).split("")
             .map(c => c.charCodeAt(0))
@@ -130,6 +127,7 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
                         .filter(chat => (chat['msgTypeCode'] || chat['messageTypeCode']) == 1)
                         .filter(chat => !((chat['msgStatusType'] || chat['messageStatusType']) == "HIDDEN"))
                         .map(convertChat)
+                        .filter(chat => chat.nickname == "깡식")
 
                     if (isRecent) {
                         pendingChatListRef.current = []
