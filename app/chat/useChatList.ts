@@ -29,6 +29,7 @@ export default function useChatList(chatChannelId: string, accessToken: string) 
         const message = raw['msg'] || raw['content']
         return {
             uid: Math.random().toString(36).substring(2, 12),
+            time: raw['msgTime'] || raw['messageTime'],
             nickname,
             badges,
             color,

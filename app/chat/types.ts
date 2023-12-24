@@ -5,6 +5,7 @@ export interface Badge {
 
 export interface Chat {
     uid: string;
+    time: number;
     nickname: string;
     badges: Badge[];
     color: number | string;
