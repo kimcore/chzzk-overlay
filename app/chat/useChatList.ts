@@ -132,9 +132,7 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
                         pendingChatListRef.current = []
                         setChatList(chats)
                     } else {
-                        pendingChatListRef.current = [...pendingChatListRef.current, ...chats].filter(
-                            ({time}, i) => i < maxChatLength || new Date().getTime() - time < 1000
-                        )
+                        pendingChatListRef.current = [...pendingChatListRef.current, ...chats].slice(-1 *  maxChatLength)
                     }
                     break
             }
@@ -159,16 +157,19 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
 
     useEffect(() => {
         const interval = setInterval(() => {
+            if (document.hidden) {
+                return
+            }
             if (pendingChatListRef.current.length > 0) {
                 if (new Date().getTime() - lastSetTimestampRef.current > 1000) {
                     setChatList((prevChatList) => {
-                        return [...prevChatList, ...pendingChatListRef.current].slice(-1 * maxChatLength)
+                        const newChatList = [...prevChatList, ...pendingChatListRef.current].slice(-1 * maxChatLength)
+                        pendingChatListRef.current = []
+                        return newChatList
                     })
-                    pendingChatListRef.current = []
                 } else {
-                    const chat = pendingChatListRef.current.shift()
                     setChatList((prevChatList) => {
-                        const newChatList = [...prevChatList, chat]
+                        const newChatList = [...prevChatList, pendingChatListRef.current.shift()]
                         if (newChatList.length > maxChatLength) {
                             newChatList.shift()
                         }
