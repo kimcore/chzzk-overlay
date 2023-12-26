@@ -3,7 +3,7 @@ import {nicknameColors} from "./constants"
 import {Chat, ChatCmd} from "./types"
 
 export default function useChatList(chatChannelId: string, accessToken: string, maxChatLength: number = 50) {
-    const currentWebSocketBusterRef = useRef<number>(0)
+    const isBrowserUnloadingRef = useRef<boolean>(false)
     const lastSetTimestampRef = useRef<number>(0)
     const pendingChatListRef = useRef<Chat[]>([])
     const [chatList, setChatList] = useState<Chat[]>([])
@@ -91,12 +91,8 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
         }
 
         ws.onclose = () => {
-            if (webSocketBuster !== currentWebSocketBusterRef.current) {
-                setTimeout(() => {
-                    const newWebSocketBuster = new Date().getTime()
-                    currentWebSocketBusterRef.current = newWebSocketBuster
-                    setWebSocketBuster(newWebSocketBuster)
-                }, 1000)
+            if (!isBrowserUnloadingRef.current) {
+                setTimeout(() => setWebSocketBuster(new Date().getTime()), 1000)
             }
         }
 
@@ -149,11 +145,15 @@ export default function useChatList(chatChannelId: string, accessToken: string, 
             worker.terminate()
             ws.close()
         }
-    }, [accessToken, chatChannelId, convertChat, maxChatLength, webSocketBuster])
+    }, [accessToken, chatChannelId, convertChat, maxChatLength])
 
     useEffect(() => {
         return connectChzzk()
     }, [connectChzzk, webSocketBuster])
+
+    useEffect(() => {
+        window.addEventListener("beforeunload", () => isBrowserUnloadingRef.current = true)
+    }, [])
 
     useEffect(() => {
         const interval = setInterval(() => {
